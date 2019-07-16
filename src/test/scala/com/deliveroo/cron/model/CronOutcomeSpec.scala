@@ -3,8 +3,8 @@ import com.deliveroo.cron.BaseSpec
 
 class CronOutcomeSpec extends BaseSpec {
 
-  "CronOutput" should {
-    "apply" in {
+  "CronOutcome" should {
+    "format" in {
       val output = CronOutcome(List(1, 2, 3), List(2, 3, 4), List(3, 4, 5), List(4, 5, 6), List(5, 6, 7), "/usr/bin/find").formatted
       output.head shouldBe "minute: 1 2 3"
       output(1) shouldBe "hour: 2 3 4"
