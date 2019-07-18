@@ -1,5 +1,6 @@
 package com.deliveroo.cron.model
 import com.deliveroo.cron.BaseSpec
+import com.deliveroo.cron.model.CronElement.fromString
 import org.scalatest.prop.TableDrivenPropertyChecks
 
 class CronElementSpec extends BaseSpec with TableDrivenPropertyChecks {
@@ -101,19 +102,25 @@ class CronElementSpec extends BaseSpec with TableDrivenPropertyChecks {
 
       "for minute" in {
         forAll(argsExamples) { (_, arg, result) =>
-          CronElement.fromString(arg, Minute) shouldBe result
+          fromString(arg, Minute) shouldBe result
         }
       }
 
       "for hour" in {
         forAll(argsExamples) { (_, arg, result) =>
-          CronElement.fromString(arg, Hour) shouldBe result
+          fromString(arg, Hour) shouldBe result
+        }
+      }
+
+      "for day of month" in {
+        forAll(argsExamples) { (_, arg, result) =>
+          fromString(arg, DayOfMonth) shouldBe result
         }
       }
 
       "for month" in {
         forAll(argsExamples) { (_, arg, result) =>
-          CronElement.fromString(arg, Month) shouldBe result
+          fromString(arg, Month) shouldBe result
         }
       }
     }
@@ -168,7 +175,7 @@ class CronElementSpec extends BaseSpec with TableDrivenPropertyChecks {
       )
 
       forAll(argsExamples) { (_, arg, result) =>
-        CronElement.fromString(arg, Minute) shouldBe result
+        fromString(arg, Minute) shouldBe result
       }
     }
 
@@ -222,7 +229,7 @@ class CronElementSpec extends BaseSpec with TableDrivenPropertyChecks {
       )
 
       forAll(argsExamples) { (_, arg, result) =>
-        CronElement.fromString(arg, Hour) shouldBe result
+        fromString(arg, Hour) shouldBe result
       }
     }
 
@@ -281,7 +288,66 @@ class CronElementSpec extends BaseSpec with TableDrivenPropertyChecks {
       )
 
       forAll(argsExamples) { (_, arg, result) =>
-        CronElement.fromString(arg, Month) shouldBe result
+        fromString(arg, Month) shouldBe result
+      }
+    }
+
+    "handle day of month specific use cases" in {
+      val argsExamples = Table(
+        (
+          "testCase",
+          "arg",
+          "result"
+        ),
+        (
+          "return error if arg higher than 31",
+          "32",
+          Left("Maximum value for day of month is 31")
+        ),
+        (
+          "return error if arg smaller than 1",
+          "0",
+          Left("Minimum value for day of month is 1")
+        ),
+        (
+          "return error if arg higher than 31 for max in range",
+          "21-32",
+          Left("Maximum value for day of month is 31")
+        ),
+        (
+          "return error if arg higher than 31 for min in range",
+          "32-34",
+          Left("Maximum value for day of month is 31")
+        ),
+        (
+          "return error if arg higher than 31 in comma separated values (first element)",
+          "32,33",
+          Left("Maximum value for day of month is 31")
+        ),
+        (
+          "return error if arg higher than 31 in comma separated values (last element)",
+          "30,31,32",
+          Left("Maximum value for day of month is 31")
+        ),
+        (
+          "return error if arg higher than 31 in comma separated values (mid element)",
+          "31,32,33",
+          Left("Maximum value for day of month is 31")
+        ),
+        (
+          "handle wildcard",
+          "*",
+          Right((1 to 31).toList)
+        ),
+        (
+          "handle wildcard with step value",
+          "*/10",
+          Right(List(1, 11, 21, 31))
+        )
+      )
+
+      forAll(argsExamples) { (_, arg, result) =>
+        fromString(arg, DayOfMonth) shouldBe result
       }
     }
   }

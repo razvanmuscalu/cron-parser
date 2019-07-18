@@ -7,8 +7,8 @@ case class CronCommand(minute: String, hour: String, dayOfMonth: String, month: 
     for {
       parsedMinute <- fromString(minute, Minute)
       parsedHour <- fromString(hour, Hour)
-      dayOfMonth = List(3)
+      parsedDayOfMonth <- fromString(dayOfMonth, DayOfMonth)
       parsedMonth <- fromString(month, Month)
       dayOfWeek = List(5)
-    } yield CronOutcome(parsedMinute, parsedHour, dayOfMonth, parsedMonth, dayOfWeek, command)
+    } yield CronOutcome(parsedMinute, parsedHour, parsedDayOfMonth, parsedMonth, dayOfWeek, command)
 }

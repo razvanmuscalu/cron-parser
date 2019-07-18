@@ -29,6 +29,11 @@ class CronCommandSpec extends BaseSpec {
       cronCommand.parsed.map(_.dayOfMonth) shouldBe Right(List(3))
     }
 
+    "return thrown error for day of month" in {
+      val cronCommand = CronCommand("1", "2", "32", "4", "5", "/usr/bin/find")
+      cronCommand.parsed shouldBe Left("Maximum value for day of month is 31")
+    }
+
     "parse month" in {
       cronCommand.parsed.map(_.month) shouldBe Right(List(4))
     }

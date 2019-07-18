@@ -5,32 +5,32 @@ sealed trait CronElement {
   val name: String
   val min: Int
   val max: Int
-  val maxErrorMsg: String
-  val minErrorMsg: String
+  def maxErrorMsg: String = s"Maximum value for $name is $max"
+  def minErrorMsg: String = s"Minimum value for $name is $min"
 }
 
 case object Minute extends CronElement {
   val name: String = "minute"
   val min: Int = 0
   val max: Int = 59
-  val maxErrorMsg: String = s"Maximum value for $name is $max"
-  val minErrorMsg: String = s"Minimum value for $name is $max"
 }
 
 case object Hour extends CronElement {
   val name: String = "hour"
   val min: Int = 0
   val max: Int = 23
-  val maxErrorMsg: String = s"Maximum value for $name is $max"
-  val minErrorMsg: String = s"Minimum value for $name is $max"
+}
+
+case object DayOfMonth extends CronElement {
+  val name: String = "day of month"
+  val min: Int = 1
+  val max: Int = 31
 }
 
 case object Month extends CronElement {
   val name: String = "month"
   val min: Int = 1
   val max: Int = 12
-  val maxErrorMsg: String = s"Maximum value for $name is $max"
-  val minErrorMsg: String = s"Minimum value for $name is $min"
 }
 
 object CronElement {
