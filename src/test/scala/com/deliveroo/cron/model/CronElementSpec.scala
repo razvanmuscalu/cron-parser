@@ -154,6 +154,16 @@ class CronElementSpec extends BaseSpec with TableDrivenPropertyChecks {
           "return error if arg higher than 60 in comma separated values (mid element)",
           "59,60,61",
           Left("Maximum value for minute is 59")
+        ),
+        (
+          "handle wildcard",
+          "*",
+          Right((0 to 59).toList)
+        ),
+        (
+          "handle wildcard with step value",
+          "*/15",
+          Right(List(0, 15, 30, 45))
         )
       )
 
@@ -198,6 +208,16 @@ class CronElementSpec extends BaseSpec with TableDrivenPropertyChecks {
           "return error if arg higher than 24 in comma separated values (mid element)",
           "23,24,25",
           Left("Maximum value for hour is 23")
+        ),
+        (
+          "handle wildcard",
+          "*",
+          Right((0 to 23).toList)
+        ),
+        (
+          "handle wildcard with step value",
+          "*/6",
+          Right(List(0, 6, 12, 18))
         )
       )
 
@@ -247,6 +267,16 @@ class CronElementSpec extends BaseSpec with TableDrivenPropertyChecks {
           "return error if arg higher than 12 in comma separated values (mid element)",
           "12,13,14",
           Left("Maximum value for month is 12")
+        ),
+        (
+          "handle wildcard",
+          "*",
+          Right((1 to 12).toList)
+        ),
+        (
+          "handle wildcard with step value",
+          "*/3",
+          Right(List(1, 4, 7, 10))
         )
       )
 

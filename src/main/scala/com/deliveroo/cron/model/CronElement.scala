@@ -40,13 +40,13 @@ object CronElement {
     val valueWithoutStep = value.split("/")(0)
 
     val interimList = valueWithoutStep match {
-      case v if v.contains(",") => handleCommaSeparatedValues(valueWithoutStep, element)
-      case v if v.contains("-") => handleRange(valueWithoutStep, element)
-      case v                    => handleSingleValue(v, element)
+      case v if v.startsWith("*") => Right((element.min to element.max).toList)
+      case v if v.contains(",")   => handleCommaSeparatedValues(valueWithoutStep, element)
+      case v if v.contains("-")   => handleRange(valueWithoutStep, element)
+      case v                      => handleSingleValue(v, element)
     }
 
-    if (value.contains("/")) handleStep(value, interimList)
-    else interimList
+    if (value.contains("/")) handleStep(value, interimList) else interimList
   }
 
   private def handleCommaSeparatedValues(value: String, element: CronElement): Either[String, List[Int]] = {
