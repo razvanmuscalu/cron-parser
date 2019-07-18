@@ -8,7 +8,7 @@ Command line application which parses a cron string and expands each field to sh
 
 You can run `mvn clean package` to run tests and create a runnable JAR which will be created under `target/docker-src` folder.
 
-You can then run `java -jar <JAR file> arg1 arg2 arg3 arg4 arg5 arg6` where
+You can then run `java -jar <JAR file> "arg1" "arg2" "arg3" "arg4" "arg5" "arg6"` where
 
 - `arg1` is the minute element
 - `arg2` is the hour element
@@ -19,7 +19,7 @@ You can then run `java -jar <JAR file> arg1 arg2 arg3 arg4 arg5 arg6` where
 
 I included a JAR called `cron-parser.jar` already under the root directory if you want to use that.
 
-
+Note: args have to be supplied within double quotes (e.g. `"*/2"`) because otherwise I observed the OSX CLI gets a bit confused with the wildcard `*` special character.
 
 # Overview
 
@@ -55,8 +55,9 @@ The main way of communicating back throughout the project is `Either[String, T]`
 - So I removed the service layer and made the input and output data/domain classes perform the logic straight inside
 
 
-## Phase 2 (initial coding of a few use cases for minute and hour) (approx 30-45m)
+## Phase 2 (initial coding of a few use cases) (approx 30-45m)
 
+- Coding of a few use cases (comma separated values and ranges) for minute and hour cron elements
 - Changed a bit the return values (using `Either[String, T]`) throughout the project to handle errors in the same place where I am handling the actual logic
     - Because the two (error handling and business logic) are very closely linked
 - Wanted to code quickly a few different use cases to get a feel of the complexity involved for the rest of the use cases
@@ -69,7 +70,7 @@ The main way of communicating back throughout the project is `Either[String, T]`
 - I performed few other smaller refactorings to break the main `fromString` function into smaller functions for better code readability
 
 
-### Phase 2.2 (handling more edge cases) (approx 30m)
+## Phase 3 (entering BAU mode) (approx 30m)
 
 - Here I mainly handled edge cases around bad input (e.g. letters) 
 - This is the point in the project timeline where I felt that the project transitioned from exploratory into BAU mode
@@ -79,4 +80,11 @@ This is roughly the point in the project timeline where I put approx 3-4 hours i
 The rest I did as pure fun because I really enjoyed the exercise.
 
 
-## Phase 3 (readme) (approx 5-10m)
+### Phase 3.1 (documentation/readme) (approx 5-10m)
+
+
+## Phase 4 (finishing the project) (approx 30-45m)
+
+- The last functional use case (wildcard)
+- The last 2 cron elements (day of month and day of week)
+- By now the project was stable, so the changes were pretty small and concise and quick to implement

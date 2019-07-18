@@ -47,6 +47,11 @@ class CronCommandSpec extends BaseSpec {
       cronCommand.parsed.map(_.dayOfWeek) shouldBe Right(List(5))
     }
 
+    "return thrown error for day of week" in {
+      val cronCommand = CronCommand("1", "2", "3", "4", "8", "/usr/bin/find")
+      cronCommand.parsed shouldBe Left("Maximum value for day of week is 7")
+    }
+
     "return same command" in {
       cronCommand.parsed.map(_.command) shouldBe Right(cronCommand.command)
     }

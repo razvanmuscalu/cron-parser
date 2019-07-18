@@ -33,9 +33,13 @@ case object Month extends CronElement {
   val max: Int = 12
 }
 
-object CronElement {
-  private val rangeErrorMsg = "Range should be specified from a lower number to a higher number"
+case object DayOfWeek extends CronElement {
+  val name: String = "day of week"
+  val min: Int = 1
+  val max: Int = 7
+}
 
+object CronElement {
   def fromString(value: String, element: CronElement): Either[String, List[Int]] = {
     val valueWithoutStep = value.split("/")(0)
 
@@ -70,7 +74,7 @@ object CronElement {
     for {
       min <- toInt(range(0))
       max <- toInt(range(1))
-      res <- if (min > max) Left(rangeErrorMsg)
+      res <- if (min > max) Left("Range should be specified from a lower number to a higher number")
       else if (min > element.max || max > element.max) Left(element.maxErrorMsg)
       else Right((min to max).toList)
     } yield res

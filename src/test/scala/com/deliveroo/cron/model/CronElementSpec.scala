@@ -40,22 +40,22 @@ class CronElementSpec extends BaseSpec with TableDrivenPropertyChecks {
         ),
         (
           "handle step value over range",
-          "2-10/2",
-          Right(List(2, 4, 6, 8, 10))
+          "2-6/2",
+          Right(List(2, 4, 6))
         ),
         (
           "handle step value over comma separated list",
-          "2,3,4,5,6,7,8,9,10/2",
-          Right(List(2, 4, 6, 8, 10))
+          "2,3,4,5,6/2",
+          Right(List(2, 4, 6))
         ),
         (
           "handle step value (case 2)",
-          "2-10/3",
-          Right(List(2, 5, 8))
+          "2-6/3",
+          Right(List(2, 5))
         ),
         (
           "handle step value (case 3)",
-          "2-10/10",
+          "2-6/10",
           Right(List(2))
         ),
         (
@@ -121,6 +121,12 @@ class CronElementSpec extends BaseSpec with TableDrivenPropertyChecks {
       "for month" in {
         forAll(argsExamples) { (_, arg, result) =>
           fromString(arg, Month) shouldBe result
+        }
+      }
+
+      "for day of week" in {
+        forAll(argsExamples) { (_, arg, result) =>
+          fromString(arg, DayOfWeek) shouldBe result
         }
       }
     }
@@ -348,6 +354,65 @@ class CronElementSpec extends BaseSpec with TableDrivenPropertyChecks {
 
       forAll(argsExamples) { (_, arg, result) =>
         fromString(arg, DayOfMonth) shouldBe result
+      }
+    }
+
+    "handle day of week specific use cases" in {
+      val argsExamples = Table(
+        (
+          "testCase",
+          "arg",
+          "result"
+        ),
+        (
+          "return error if arg higher than 7",
+          "8",
+          Left("Maximum value for day of week is 7")
+        ),
+        (
+          "return error if arg smaller than 1",
+          "0",
+          Left("Minimum value for day of week is 1")
+        ),
+        (
+          "return error if arg higher than 7 for max in range",
+          "6-8",
+          Left("Maximum value for day of week is 7")
+        ),
+        (
+          "return error if arg higher than 7 for min in range",
+          "8-9",
+          Left("Maximum value for day of week is 7")
+        ),
+        (
+          "return error if arg higher than 7 in comma separated values (first element)",
+          "8,9",
+          Left("Maximum value for day of week is 7")
+        ),
+        (
+          "return error if arg higher than 7 in comma separated values (last element)",
+          "6,7,8",
+          Left("Maximum value for day of week is 7")
+        ),
+        (
+          "return error if arg higher than 7 in comma separated values (mid element)",
+          "7,8,9",
+          Left("Maximum value for day of week is 7")
+        ),
+        (
+          "handle wildcard",
+          "*",
+          Right((1 to 7).toList)
+        ),
+        (
+          "handle wildcard with step value",
+          "*/2",
+          Right(List(1, 3, 5, 7))
+        )
+      )
+
+      forAll(argsExamples) { (_, arg, result) =>
+        fromString(arg, DayOfWeek) shouldBe result
       }
     }
   }
