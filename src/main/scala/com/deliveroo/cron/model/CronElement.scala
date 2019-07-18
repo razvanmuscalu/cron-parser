@@ -42,35 +42,57 @@ object CronElement {
     val interimList = valueWithoutStep match {
       case v if v.contains(",") => handleCommaSeparatedValues(valueWithoutStep, element)
       case v if v.contains("-") => handleRange(valueWithoutStep, element)
-      case v =>
-        Try(v.toInt).toEither match {
-          case Right(i) => handleSingleValue(i, element)
-          case Left(_)  => Left("Something wrong happened. Please check your input.")
-        }
+      case v                    => handleSingleValue(v, element)
     }
 
-    if (value.contains("/")) {
-      val step = value.split("/")(1).toInt
-      interimList.map(_.grouped(step).map(_.head).toList)
-    } else interimList
+    if (value.contains("/")) handleStep(value, interimList)
+    else interimList
   }
 
   private def handleCommaSeparatedValues(value: String, element: CronElement): Either[String, List[Int]] = {
-    val list = value.split(",").map(_.toInt).toList
-    if (list.exists(_ > element.max)) Left(element.maxErrorMsg) else Right(list)
+    val list = value
+      .split(",")
+      .map(toInt)
+      .toList
+      .foldRight(Right(Nil): Either[String, List[Int]]) { (elem, acc) =>
+        acc.right.flatMap(list => elem.right.map(_ :: list))
+      }
+
+    list.flatMap { l =>
+      if (l.exists(_ > element.max)) Left(element.maxErrorMsg) else Right(l)
+    }
+
   }
 
   private def handleRange(value: String, element: CronElement): Either[String, List[Int]] = {
     val range = value.split("-")
-    val min = range(0).toInt
-    val max = range(1).toInt
-    if (min > max) Left(rangeErrorMsg)
-    else if (min > element.max || max > element.max) Left(element.maxErrorMsg)
-    else Right((min to max).toList)
+
+    for {
+      min <- toInt(range(0))
+      max <- toInt(range(1))
+      res <- if (min > max) Left(rangeErrorMsg)
+      else if (min > element.max || max > element.max) Left(element.maxErrorMsg)
+      else Right((min to max).toList)
+    } yield res
   }
 
-  private def handleSingleValue(i: Int, element: CronElement): Either[String, List[Int]] =
-    if (i > element.max) Left(element.maxErrorMsg)
-    else if (i < element.min) Left(element.minErrorMsg)
-    else Right(List(i))
+  private def handleSingleValue(value: String, element: CronElement): Either[String, List[Int]] =
+    toInt(value).flatMap { i =>
+      if (i > element.max) Left(element.maxErrorMsg)
+      else if (i < element.min) Left(element.minErrorMsg)
+      else Right(List(i))
+    }
+
+  private def handleStep(value: String, interimList: Either[String, List[Int]]): Either[String, List[Int]] = {
+    val step = value.split("/")(1)
+    toInt(step).flatMap { i =>
+      interimList.map(_.grouped(i).map(_.head).toList)
+    }
+  }
+
+  private def toInt(v: String): Either[String, Int] =
+    Try(v.toInt).toEither match {
+      case Right(i) => Right(i)
+      case Left(_)  => Left("Something wrong happened. Please check your input.")
+    }
 }

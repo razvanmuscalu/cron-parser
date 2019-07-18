@@ -62,6 +62,41 @@ class CronElementSpec extends BaseSpec with TableDrivenPropertyChecks {
           "a",
           Left("Something wrong happened. Please check your input.")
         ),
+        (
+          "throw generic error if invalid arg (letter for min in range)",
+          "a-2",
+          Left("Something wrong happened. Please check your input.")
+        ),
+        (
+          "throw generic error if invalid arg (letter for max in range)",
+          "2-a",
+          Left("Something wrong happened. Please check your input.")
+        ),
+        (
+          "throw generic error if invalid arg (first in comma separated values)",
+          "a,2,3",
+          Left("Something wrong happened. Please check your input.")
+        ),
+        (
+          "throw generic error if invalid arg (last in comma separated values)",
+          "2,a,3",
+          Left("Something wrong happened. Please check your input.")
+        ),
+        (
+          "throw generic error if invalid arg (mid in comma separated values)",
+          "2,3,a",
+          Left("Something wrong happened. Please check your input.")
+        ),
+        (
+          "throw generic error if invalid arg in step over range",
+          "2-3/a",
+          Left("Something wrong happened. Please check your input.")
+        ),
+        (
+          "throw generic error if invalid arg in step over comma separated values",
+          "2,3/a",
+          Left("Something wrong happened. Please check your input.")
+        )
       )
 
       "for minute" in {
